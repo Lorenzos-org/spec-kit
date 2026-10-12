@@ -38,7 +38,17 @@ jobs:
         with:
           dotnet-version: '8.x'
 
+      - name: Cache DocFX
+        id: cache-docfx
+        uses: actions/cache@v4
+        with:
+          path: ~/.dotnet/tools/docfx
+          key: ${{ runner.os }}-docfx-${{ hashFiles('docs/docfx.json') }}
+          restore-keys: |
+            ${{ runner.os }}-docfx-
+
       - name: Setup DocFX
+        if: steps.cache-docfx.outputs.cache-hit != 'true'
         run: dotnet tool install -g docfx
 
       - name: Build with DocFX
@@ -65,4 +75,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
